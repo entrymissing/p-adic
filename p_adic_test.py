@@ -1,8 +1,6 @@
 import unittest
 
-from fractions import Fraction
-
-from p_adic import count_factors, padic_distance_rational
+from p_adic import count_factors, padic_dist
 
 class TestFactorization(unittest.TestCase):
   def test_count_factors(self):
@@ -16,19 +14,39 @@ class TestFactorization(unittest.TestCase):
     # TODO: Add 0 and negative values
 
 class TestPAdicDistance(unittest.TestCase):
-  def test_padic_distance_rational(self):
-    self.assertEqual(padic_distance_rational(Fraction(1, 2), 2), 1)
-    self.assertEqual(padic_distance_rational(Fraction(2, 1), 2), 1)
+  def test_padic_dist(self):
+    # p-adic distance of 0 is 0
+    self.assertEqual(padic_dist(0, 2), 0)
+    self.assertEqual(padic_dist(0, 5), 0)
 
-    self.assertEqual(padic_distance_rational(Fraction(1, 3), 2), 0)
-    self.assertEqual(padic_distance_rational(Fraction(3, 1), 2), 0)
+    # distances of some integers
+    self.assertEqual(padic_dist(2, 2), 1)
+    self.assertEqual(padic_dist(2, 3), 0)
+    self.assertEqual(padic_dist(6, 2), 1)
+    self.assertEqual(padic_dist(6, 3), 1)
+    self.assertEqual(padic_dist(18, 3), 2)
 
-    self.assertEqual(padic_distance_rational(Fraction(1, 4), 2), 2)
-    self.assertEqual(padic_distance_rational(Fraction(4, 1), 2), 2)
+    # distances of some floats
+    self.assertEqual(padic_dist(0.5, 2), 1)
+    self.assertEqual(padic_dist(0.25, 2), 2)
+    self.assertEqual(padic_dist(0.25, 3), 0)
+    self.assertEqual(padic_dist(0.3, 3), 1)
 
-    self.assertEqual(padic_distance_rational(Fraction(4, 2), 2), 1)
-    self.assertEqual(padic_distance_rational(Fraction(4, 3), 2), 2)
+    # float 0
+    self.assertEqual(padic_dist(0.0, 3), 0)
 
+  def test_padic_dist_errors(self):
+    # p cannot be a float
+    with self.assertRaises(Exception):
+      padic_dist(4, 0)
+
+    # p cannot be negative
+    with self.assertRaises(Exception):
+      padic_dist(3, -1)
+
+    # n must be int or float
+    with self.assertRaises(Exception):
+      padic_dist("0.111")
 
 if __name__ == '__main__':
     unittest.main()
